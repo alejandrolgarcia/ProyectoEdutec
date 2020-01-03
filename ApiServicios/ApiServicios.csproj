@@ -19,5 +19,9 @@
     <Folder Include="Models\" />
     <Folder Include="Models\Categoria\" />
     <Folder Include="Models\Rol\" />
+    <Folder Include="Models\Usuario\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />
   </ItemGroup>
 </Project>
