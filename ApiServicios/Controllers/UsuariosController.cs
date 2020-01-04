@@ -92,31 +92,41 @@ namespace ApiServicios.Controllers
       }
     }
 
-    /*
+    
     // PUT api/Usuarios/Update
     [HttpPut("[action]")]
-    public async Task<IActionResult> Update([FromBody] CategoriaViewModel model)
+    public async Task<IActionResult> Update([FromBody] UpdateViewModel model)
     {
       if (!ModelState.IsValid)
       {
         return BadRequest(ModelState);
       }
 
-      if (model.Idcategoria <= 0)
+      if (model.Idusuario <= 0)
       {
         return BadRequest();
       }
 
-      var categoria = await _context.Categorias.FirstOrDefaultAsync(c => c.Idcategoria == model.Idcategoria);
+      var usuario = await _context.Usuarios.FirstOrDefaultAsync(c => c.Idusuario == model.Idusuario);
 
-      if (categoria == null)
+      if (usuario == null)
       {
         return NotFound();
       }
 
-      categoria.Nombre = model.Nombre;
-      categoria.Descripcion = model.Descripcion;
-      categoria.Estado = model.Estado;
+      usuario.Idrol = model.Idrol;
+      usuario.Nombre = model.Nombre;
+      usuario.Apellido = model.Apellido;
+      usuario.Email = model.Email;
+      usuario.Estado = model.Estado;
+
+      // Solo si cambia la password.
+      if (model.Act_password == true)
+      {
+        CrearPasswordHash(model.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        usuario.Password_hash = passwordHash;
+        usuario.Password_salt = passwordSalt;
+      }
 
       try
       {
@@ -130,7 +140,37 @@ namespace ApiServicios.Controllers
       return Ok();
 
     }
-    */
+
+    // DELETE api/Usuarios/Delete/5
+    [HttpDelete("[action]/{id}")]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+      if (id <= 0)
+      {
+        return BadRequest();
+      }
+
+      var usuario = await _context.Usuarios.FirstOrDefaultAsync(c => c.Idusuario == id);
+
+      if (usuario == null)
+      {
+        return NotFound();
+      }
+
+      usuario.Estado = false;
+
+      try
+      {
+        await _context.SaveChangesAsync();
+      }
+      catch (DbUpdateConcurrencyException ex)
+      {
+        return BadRequest(ex);
+      }
+
+      return Ok();
+
+    }
 
   }
 }
