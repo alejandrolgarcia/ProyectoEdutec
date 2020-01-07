@@ -12,6 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace ApiServicios
 {
@@ -28,7 +30,10 @@ namespace ApiServicios
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddControllers();
-            services.AddControllers().AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            services.AddControllers().AddNewtonsoftJson(options => {
+              options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+              options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+            });
 
             services.AddDbContext<DbContextServicios>(options =>
               options.UseSqlServer(Configuration.GetConnectionString("Conexion")));

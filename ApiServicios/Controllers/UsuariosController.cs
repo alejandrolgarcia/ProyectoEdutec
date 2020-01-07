@@ -1,12 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using ApiServicios.Models.Usuario;
 using Datos;
 using Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,10 +21,12 @@ namespace ApiServicios.Controllers
   public class UsuariosController : Controller
   {
     private readonly DbContextServicios _context;
+    private readonly IConfiguration _config;
 
-    public UsuariosController(DbContextServicios context)
+    public UsuariosController(DbContextServicios context, IConfiguration config)
     {
       _context = context;
+      _config = config;
     }
 
     // GET: api/Usuarios/GetAll
@@ -170,6 +177,72 @@ namespace ApiServicios.Controllers
 
       return Ok();
 
+    }
+
+    // POST api/Usuarios/Login
+    [HttpPost("[action]")]
+    public async Task<IActionResult> Login(LoginViewModel model)
+    {
+      
+      string email = model.Email;
+
+      var usuario = await _context.Usuarios
+        .Where( u => u.Estado == true)
+        .Include(u => u.Rol)
+        .FirstOrDefaultAsync( u => u.Email == email);
+
+      if ( usuario == null)
+      {
+        return NotFound();
+      }
+
+      if (!VerificarPasswordHash(model.Password, usuario.Password_hash, usuario.Password_salt))
+      {
+        return NotFound();
+      }
+
+      // 
+      var claims = new List<Claim>
+      {
+        new Claim(ClaimTypes.NameIdentifier, usuario.Idusuario.ToString()),
+        new Claim(ClaimTypes.Email, email),
+        new Claim(ClaimTypes.Role, usuario.Rol.Nombre),
+
+        new Claim("Idusuario", usuario.Idusuario.ToString()),
+        new Claim("Rol", usuario.Rol.Nombre),
+        new Claim("Nombre", usuario.Nombre)
+      };
+
+      return Ok(new { token = GenerarToken(claims)});
+    }
+
+    // Metodo recibe el password que escribe el usuario y comparar si es el mismo que se encuentra almacenado.
+
+    private bool VerificarPasswordHash( string password, byte[] passwordHashAlmacenado, byte[] passwordSalt)
+    {
+      using ( var hmac = new System.Security.Cryptography.HMACSHA512(passwordSalt))
+      {
+        var passwordHashNuevo = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+        return new ReadOnlySpan<byte>(passwordHashAlmacenado).SequenceEqual(new ReadOnlySpan<byte>(passwordHashNuevo));
+      }
+    }
+
+
+    // Generar token con JWT
+    private string GenerarToken(List<Claim> claims)
+    {
+      var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+      var credenciales = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+      var token = new JwtSecurityToken(
+        _config["Jwt:Issuer"],
+        _config["Jwt:Issuer"],
+        expires: DateTime.Now.AddMinutes(30),
+        signingCredentials: credenciales,
+        claims: claims
+        );
+
+      return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
   }
