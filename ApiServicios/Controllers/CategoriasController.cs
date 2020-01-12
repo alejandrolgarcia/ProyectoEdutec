@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ApiServicios.Models.Categoria;
 using Datos;
 using Entidades;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApiServicios.Controllers
 {
+  [Authorize(Roles= "Administrador, Profesional")]
   [Route("api/[controller]")]
   public class CategoriasController : Controller
   {

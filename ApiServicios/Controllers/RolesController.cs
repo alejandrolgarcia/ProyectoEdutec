@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ApiServicios.Models.Rol;
 using Datos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApiServicios.Controllers
 {
+  [Authorize(Roles = "Administrador")]
   [Route("api/[controller]")]
   public class RolesController : Controller
   {

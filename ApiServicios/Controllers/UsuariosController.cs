@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using ApiServicios.Models.Usuario;
 using Datos;
 using Entidades;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -29,6 +30,7 @@ namespace ApiServicios.Controllers
       _config = config;
     }
 
+    [Authorize(Roles = "Administrador")]
     // GET: api/Usuarios/GetAll
     [HttpGet("[action]")]
     public async Task<IEnumerable<UsuarioViewModel>> GetAll()
@@ -48,6 +50,7 @@ namespace ApiServicios.Controllers
       });
     }
 
+    [Authorize(Roles = "Administrador")]
     // POST api/Usuarios/Create
     [HttpPost("[action]")]
     public async Task<ActionResult> Create([FromBody]CreateViewModel model)
@@ -99,7 +102,7 @@ namespace ApiServicios.Controllers
       }
     }
 
-    
+    [Authorize(Roles = "Administrador")]
     // PUT api/Usuarios/Update
     [HttpPut("[action]")]
     public async Task<IActionResult> Update([FromBody] UpdateViewModel model)
@@ -148,6 +151,7 @@ namespace ApiServicios.Controllers
 
     }
 
+    [Authorize(Roles = "Administrador")]
     // DELETE api/Usuarios/Delete/5
     [HttpDelete("[action]/{id}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
@@ -181,10 +185,10 @@ namespace ApiServicios.Controllers
 
     // POST api/Usuarios/Login
     [HttpPost("[action]")]
-    public async Task<IActionResult> Login(LoginViewModel model)
+    public async Task<IActionResult> Login([FromBody]LoginViewModel model)
     {
       
-      string email = model.Email;
+      var email = model.Email.ToLower();
 
       var usuario = await _context.Usuarios
         .Where( u => u.Estado == true)
