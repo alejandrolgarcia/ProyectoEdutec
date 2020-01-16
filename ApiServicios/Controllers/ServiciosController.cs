@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ApiServicios.Models.Servicio;
 using Datos;
+using Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -55,10 +56,58 @@ namespace ApiServicios.Controllers
       return "value";
     }
 
-    // POST api/values
-    [HttpPost]
-    public void Post([FromBody]string value)
+    // POST api/Servicios/Create
+    [HttpPost("[action]")]
+    public async Task<ActionResult> Create([FromBody]CreateViewModel model)
     {
+      if (!ModelState.IsValid)
+      {
+        return BadRequest(ModelState);
+      }
+
+      var fechaHora = DateTime.Now;
+
+      // Alta del servicio
+      Servicio servicio = new Servicio
+      {
+        Idcategoria = model.Idcategoria,
+        Idusuario = model.Idusuario,
+        Nombre = model.Nombre,
+        Descripcion = model.Descripcion,
+        Precio = model.Precio,
+        Calificacion = 0,
+        Fecha_servicio = fechaHora,
+        Estado = true
+      };
+
+      // Captura detalle de horarios asociados a un servicio.
+      try
+      {
+        _context.Servicios.Add(servicio);
+
+        await _context.SaveChangesAsync();
+
+        var id = servicio.Idservicio;
+
+        foreach (var detalle in model.DetalleHorario)
+        {
+          Horario horario = new Horario
+          {
+            Idservicio = id,
+            Hora_inicio = detalle.Hora_inicio,
+            Hora_final = detalle.Hora_final,
+            Estado = true
+          };
+          _context.Horarios.Add(horario);
+        }
+        await _context.SaveChangesAsync();
+      }
+      catch (Exception ex)
+      {
+        return BadRequest(ex);
+      }
+
+      return Ok();
     }
 
     // PUT api/values/5
