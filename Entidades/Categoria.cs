@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Entidades
@@ -15,5 +16,7 @@ namespace Entidades
     public string Descripcion { get; set; }
 
     public bool Estado { get; set; }
+
+    public ICollection<Servicio> Servicios { get; set;}
   }
 }
