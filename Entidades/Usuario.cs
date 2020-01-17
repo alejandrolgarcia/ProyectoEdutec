@@ -26,5 +26,6 @@ namespace Entidades
     public Rol Rol { get; set; }
 
     public ICollection<Servicio> Servicios { get; set; }
+    public ICollection<Reserva> Reservas { get; set; }
   }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entidades
@@ -13,5 +14,7 @@ namespace Entidades
 
     [ForeignKey("Idservicio")]
     public Servicio Servicio { get; set; }
+
+    public ICollection<Reserva> Reservas { get; set; }
   }
 }

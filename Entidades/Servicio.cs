@@ -22,6 +22,7 @@ namespace Entidades
     public Usuario Usuarios { get; set; }
 
     public ICollection<Horario> Horarios { get; set; }
-
+    public ICollection<Reserva> Reservas { get; set; }
+    
   }
 }

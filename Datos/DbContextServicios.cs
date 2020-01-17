@@ -11,6 +11,7 @@ namespace Datos
     public DbSet<Usuario> Usuarios { get; set; }
     public DbSet<Servicio> Servicios { get; set; }
     public DbSet<Horario> Horarios { get; set; }
+    public DbSet<Reserva> Reservas { get; set; }
 
     public DbContextServicios(DbContextOptions<DbContextServicios> options)
       : base(options)
@@ -26,7 +27,7 @@ namespace Datos
       modelBuilder.ApplyConfiguration(new UsuarioMap());
       modelBuilder.ApplyConfiguration(new ServicioMap());
       modelBuilder.ApplyConfiguration(new HorarioMap());
-
+      modelBuilder.ApplyConfiguration(new ReservaMap());
     }
   }
 }
