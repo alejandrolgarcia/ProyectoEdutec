@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using ApiServicios.Models.Servicio;
 using Datos;
 using Entidades;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +26,7 @@ namespace ApiServicios.Controllers
     // Obtener todos los servicios
 
     // GET: api/Servicios/GetAll
+    [Authorize(Roles = "Administrador, Profesional")]
     [HttpGet("[action]")]
     public async Task<IEnumerable<ServicioViewModel>> GetAll()
     {
@@ -61,6 +63,7 @@ namespace ApiServicios.Controllers
     // Crear un nuevo servicio
 
     // POST api/Servicios/Create
+    [Authorize(Roles = "Administrador, Profesional")]
     [HttpPost("[action]")]
     public async Task<ActionResult> Create([FromBody]CreateViewModel model)
     {
