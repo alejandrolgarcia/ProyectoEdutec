@@ -38,6 +38,8 @@ namespace ApiServicios.Controllers
       });
     }
 
+    // Obtener listado de roles
+
     // GET: api/Roles/Select
     [HttpGet("[action]")]
     public async Task<IEnumerable<SelectViewModel>> Select()

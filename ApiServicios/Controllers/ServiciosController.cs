@@ -22,6 +22,8 @@ namespace ApiServicios.Controllers
       _context = context;
     }
 
+    // Obtener todos los servicios
+
     // GET: api/Servicios/GetAll
     [HttpGet("[action]")]
     public async Task<IEnumerable<ServicioViewModel>> GetAll()
@@ -56,6 +58,8 @@ namespace ApiServicios.Controllers
       return "value";
     }
 
+    // Crear un nuevo servicio
+
     // POST api/Servicios/Create
     [HttpPost("[action]")]
     public async Task<ActionResult> Create([FromBody]CreateViewModel model)
@@ -89,6 +93,7 @@ namespace ApiServicios.Controllers
 
         var id = servicio.Idservicio;
 
+        // Recorrer el detalle con el foreach
         foreach (var detalle in model.DetalleHorario)
         {
           Horario horario = new Horario

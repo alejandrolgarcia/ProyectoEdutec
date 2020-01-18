@@ -24,6 +24,8 @@ namespace ApiServicios.Controllers
       _context = context;
     }
 
+    // Obtener todas las categorias
+
     // GET: api/Categorias/GetAll
     [HttpGet("[action]")]
     public async Task<IEnumerable<CategoriaViewModel>> GetAll()
@@ -38,6 +40,8 @@ namespace ApiServicios.Controllers
         Estado = c.Estado
       });
     }
+
+    // Obtener una categoria por Id
 
     // GET api/Categorias/GetItem/5
     [HttpGet("[action]/{id}")]
@@ -56,6 +60,8 @@ namespace ApiServicios.Controllers
         Estado = categoria.Estado
       });
     }
+
+    // Crear una nueva categoria
 
     // POST api/Categorias/Create
     [HttpPost("[action]")]
@@ -83,6 +89,8 @@ namespace ApiServicios.Controllers
         return BadRequest(ex);
       }
     }
+
+    // Actualizar una categoria
 
     // PUT api/Categorias/Update
     [HttpPut("[action]")]
@@ -121,6 +129,8 @@ namespace ApiServicios.Controllers
       return Ok();
 
     }
+
+    // Anular una categoria
 
     // DELETE api/Categorias/Delete/5
     [HttpDelete("[action]/{id}")]

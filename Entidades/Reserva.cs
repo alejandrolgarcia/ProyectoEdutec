@@ -16,10 +16,10 @@ namespace Entidades
     public bool Estado { get; set; }
 
     [ForeignKey("Idservicio")]
-    public Servicio Servicios { get; set; }
+    public Servicio Servicio { get; set; }
     [ForeignKey("Idhorario")]
-    public Horario Horarios { get; set; }
+    public Horario Horario { get; set; }
     [ForeignKey("Idusuario")]
-    public Usuario Usuarios { get; set; } 
+    public Usuario Usuario { get; set; } 
   }
 }

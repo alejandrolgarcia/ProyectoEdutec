@@ -30,8 +30,10 @@ namespace ApiServicios.Controllers
       _config = config;
     }
 
-    [Authorize(Roles = "Administrador")]
+    // Obtener todos los usuarios
+
     // GET: api/Usuarios/GetAll
+    [Authorize(Roles = "Administrador")]
     [HttpGet("[action]")]
     public async Task<IEnumerable<UsuarioViewModel>> GetAll()
     {
@@ -50,22 +52,25 @@ namespace ApiServicios.Controllers
       });
     }
 
-    [Authorize(Roles = "Administrador")]
+    // Crear un nuevo usuario
+
     // POST api/Usuarios/Create
+    [Authorize(Roles = "Administrador")]
     [HttpPost("[action]")]
     public async Task<ActionResult> Create([FromBody]CreateViewModel model)
     {
       if (!ModelState.IsValid)
         return BadRequest(ModelState);
 
-      // Validar si el Email ya existe
       var email = model.Email.ToLower();
 
+      // Validar si el Email ya existe
       if (await _context.Usuarios.AnyAsync(u => u.Email == email))
       {
         return BadRequest("El email ya existe");
       }
 
+      // Transformar la password 
       CrearPasswordHash(model.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
       Usuario usuario = new Usuario
@@ -102,8 +107,10 @@ namespace ApiServicios.Controllers
       }
     }
 
-    [Authorize(Roles = "Administrador")]
+    // Actualización de Usuarios
+
     // PUT api/Usuarios/Update
+    [Authorize(Roles = "Administrador")]
     [HttpPut("[action]")]
     public async Task<IActionResult> Update([FromBody] UpdateViewModel model)
     {
@@ -130,7 +137,7 @@ namespace ApiServicios.Controllers
       usuario.Email = model.Email;
       usuario.Estado = model.Estado;
 
-      // Solo si cambia la password.
+      // Solo si cambia la password se actualiza en la base de datos.
       if (model.Act_password == true)
       {
         CrearPasswordHash(model.Password, out byte[] passwordHash, out byte[] passwordSalt);
@@ -146,13 +153,13 @@ namespace ApiServicios.Controllers
       {
         return BadRequest(ex);
       }
-
       return Ok();
-
     }
 
-    [Authorize(Roles = "Administrador")]
+    // Dar de baja a un usuario
+
     // DELETE api/Usuarios/Delete/5
+    [Authorize(Roles = "Administrador")]
     [HttpDelete("[action]/{id}")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
@@ -183,11 +190,14 @@ namespace ApiServicios.Controllers
 
     }
 
+    //  Login: Si el correo y password es correcto devuelve el un token para autentificarse
+
     // POST api/Usuarios/Login
     [HttpPost("[action]")]
     public async Task<IActionResult> Login([FromBody]LoginViewModel model)
     {
-      
+
+      // convertir los caracteres del Email en minuscula
       var email = model.Email.ToLower();
 
       var usuario = await _context.Usuarios
@@ -200,12 +210,14 @@ namespace ApiServicios.Controllers
         return NotFound();
       }
 
+      // Verificar si la password es correcta
+
       if (!VerificarPasswordHash(model.Password, usuario.Password_hash, usuario.Password_salt))
       {
         return NotFound();
       }
 
-      // 
+      // Informacion del usuario que se agrega al token
       var claims = new List<Claim>
       {
         new Claim(ClaimTypes.NameIdentifier, usuario.Idusuario.ToString()),
@@ -217,6 +229,7 @@ namespace ApiServicios.Controllers
         new Claim("Nombre", usuario.Nombre)
       };
 
+      // retornar el token JWT
       return Ok(new { token = GenerarToken(claims)});
     }
 
@@ -231,8 +244,10 @@ namespace ApiServicios.Controllers
       }
     }
 
+    // Metodo para generar token con JWT
+    // La clase que genera el token con .NET es JwtSecurityToken, recibe como parametro la lista de claims
+    // adicionales que necesitamos regresar en el token.
 
-    // Generar token con JWT
     private string GenerarToken(List<Claim> claims)
     {
       var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ApiServicios.Models.Reserva;
 using Datos;
+using Entidades;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,19 +27,19 @@ namespace ApiServicios.Controllers
     public async Task<IEnumerable<ReservaViewModel>> GetAll()
     {
       var reservas = await _context.Reservas
-        .Include( r => r.Servicios)
-        .Include( r => r.Horarios)
-        .Include( r => r.Usuarios)
+        .Include( r => r.Servicio)
+        .Include( r => r.Horario)
+        .Include( r => r.Usuario)
         .ToListAsync();
 
       return reservas.Select(r => new ReservaViewModel
       {
         Idreserva = r.Idreserva,
         Idservicio = r.Idservicio,
-        Nombreservicio = r.Servicios.Nombre,
+        Nombreservicio = r.Servicio.Nombre,
         Idhorario = r.Idhorario,
-        Hora_inicio = r.Horarios.Hora_inicio,
-        Hora_fin = r.Horarios.Hora_final,
+        Hora_inicio = r.Horario.Hora_inicio,
+        Hora_fin = r.Horario.Hora_final,
         Idusuario = r.Idusuario,
         Fecha_reserva = r.Fecha_reserva,
         Precio = r.Precio,
